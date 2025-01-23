@@ -33,7 +33,7 @@ end
 background = 1; % 0-middle,1-severve
 pad = 1;        %1-sysemtic,0-pad0
 denoise = 0;    % Guassion denoise
-thres = 60;     % Threshold to distinguish background and information
+thres = 70;     % Threshold to distinguish background and information
 divide = 0.5;
 
 %% Padding edge
