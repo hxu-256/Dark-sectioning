@@ -1,4 +1,4 @@
-This is the Supplementary Code for the article "Dark-based Optical Sectioning assists Background Removal in Fluorescence Microscopy" in BioXiv.
+This is the official code for the article "Dark-based Optical Sectioning assists Background Removal in Fluorescence Microscopy" in BioXiv.
 https://www.biorxiv.org/content/10.1101/2024.03.02.578598v1
 This article has been accepted and will soon be published, the early doi of our papaer will be 10.1038/s41592-025-02667-6.
 
