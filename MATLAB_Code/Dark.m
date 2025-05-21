@@ -1,3 +1,4 @@
+
 %% The main program of Dark section
 % https://github.com/sjtrny/Dark-Channel-Haze-Removal
 % This program is finished by Caoruijie and professor Xipeng in Peking 
@@ -15,10 +16,12 @@
 % We claim a Apache liscence for Dark sectioning.
 tic;
 clear; close all; clc;
-addpath('helpfunctions\');
-
+addpath('./helpfunctions/');
+addpath('./bfmatlab')
+data_folder = fullfile(getenv('HOME'), 'scratch/IHC/raw');
+nd2_files = dir(fullfile(data_folder, '*.nd2'));
 %% Read data
-image0 = double(imstackread('.\input\Mousekidney_561nm_1.49NA_65nm.tif'));
+image0 = double(imstackread('./input/mito-(COMPLEX I)100_WT_apex_100x.tif'));
 image0 = 255*(image0 - min(min(image0)))./(max(max(image0))-min(min(image0)));
 [Nx0,Ny0,~] = size(image0);
 [Nx,Ny,~] = size(image0);
@@ -30,13 +33,14 @@ end
 [Nx,Ny,Nz] = size(image0);
 
 %% Reconstruction parameters
-background = 1; % 0-middle,1-severve
+background = 0; % 0-middle,1-severve
 pad = 1;        %1-sysemtic,0-pad0
 denoise = 0;    % Guassion denoise
-thres = 70;     % Threshold to distinguish background and information
+thres = 60;     % Threshold to distinguish background and information
 divide = 0.5;
 
 %% Padding edge
+tic;
 pad_size = 15;
 result_stack = zeros(Nx,Ny,Nz);
 Lo_process_stack = zeros(Nx,Ny,Nz);
@@ -48,12 +52,12 @@ for jz = 1:Nz
         image(:,:,jz) = padarray(image0(:,:,jz),[floor(Nx/pad_size)+1,floor(Ny/pad_size)+1]);
     end
 end
-
+toc;
 %% Basic parameters
 [params.Nx,params.Ny,~] = size(image);
-params.NA = 1.49;
-params.emwavelength = 610;
-params.pixelsize = 65;
+params.NA = 1.45;
+params.emwavelength = 595;
+params.pixelsize = 110;
 params.factor = 2;
 
 %% Background setting
@@ -70,8 +74,10 @@ elseif background == 0
 end
 
 %% Dark sectioning
+tic;
 for time = 1:maxtime
-    for jz = 1:Nz
+    parfor jz = 1:Nz
+        fprintf('Dark sectioning %d/%d\n',jz,Nz);
         deg = deg_matrix(time);   % 3-10
         dep = dep_matrix(time);   % 0.7-2
         hl = hl_matrix(maxtime);    % 3-8
@@ -92,7 +98,7 @@ for time = 1:maxtime
         Hi_stack(:,:,jz) = Hi;
     end
     image0 = result_stack;
-    for jz = 1:Nz
+    parfor jz = 1:Nz
         if pad==1
             image(:,:,jz) = padarray(image0(:,:,jz),[floor(Nx/pad_size)+1,floor(Ny/pad_size)+1],'symmetric');
         else
@@ -100,10 +106,13 @@ for time = 1:maxtime
         end
     end
 end
-
+fprintf("Dark sectioning done!");
+toc;
 %% Denoise
+tic;
 result_final = zeros(Nx,Ny,Nz);
 for jz = 1:Nz
+    fprintf('denoising %d/%d\n',jz,Nz);
     if pad ==1
         temp = padarray(result_stack(:,:,jz),[floor(Nx/pad_size)+1,floor(Ny/pad_size)+1],'symmetric');
     else
@@ -117,7 +126,7 @@ for jz = 1:Nz
     end
     result_final(:,:,jz) = temp1(floor(Nx/pad_size)+2:floor(Nx/pad_size)+Nx+1,floor(Ny/pad_size)+2:floor(Ny/pad_size)+Ny+1);
 end
-
+toc;
 %% Select regin of interst
 if Nx0~=Nx || Ny0~=Ny
     if Nx>Nx0
@@ -129,12 +138,13 @@ if Nx0~=Nx || Ny0~=Ny
 end
 
 
-%% Saving results
+%% Saving resultsmsdfsdfdg
+tic;
 maxnum = max(max(max(result_final)));
 final_image = uint16(65535*result_final./maxnum);
-stackfilename = ['.\output\Dark.tif'];
+stackfilename = ['./output/test.tif'];
 for k = 1:Nz
-    imwrite(final_image(:,:,k), stackfilename, 'WriteMode','append') % 写入stack图像
+    imwrite(final_image(:,:,k), stackfilename, 'WriteMode','overwrite') % 写入stack图像
 end
 
 toc
