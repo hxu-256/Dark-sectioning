@@ -2,7 +2,7 @@ function result_final = dark_section_image(image0, wavelength_nm, pixelsize_um, 
     % Rescale
     pixelsize_nm = pixelsize_um * 1000;
     image0 = double(image0);
-    image0 = 255 * 255*(image0 - min(min(image0)))./(max(max(image0))-min(min(image0)));
+    image0 = 255*(image0 - min(min(min(image0))))./(max(max(max(image0)))-min(min(min(image0))));
     [Nx0,Ny0,~] = size(image0);
     [Nx,Ny,~] = size(image0);
     if Ny>Nx
