@@ -3,7 +3,8 @@
 clear; close all; clc;
 addpath("./bfmatlab");
 addpath("./helpfunctions");
-data_folder = fullfile(getenv('HOME'), 'scratch/IHC/raw');      %you may change this
+%data_folder = fullfile(getenv('HOME'), 'scratch/IHC/raw');      %you may change this
+data_folder = uigetdir();
 data_files = dir(fullfile(data_folder, '*.nd2'));
 for k = 1:length(data_files)
     data_path = fullfile(data_folder, data_files(k).name);

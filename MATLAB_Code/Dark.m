@@ -21,8 +21,13 @@ addpath('./bfmatlab')
 data_folder = fullfile(getenv('HOME'), 'scratch/IHC/raw');
 nd2_files = dir(fullfile(data_folder, '*.nd2'));
 %% Read data
+<<<<<<< HEAD
 image0 = double(imstackread('.\input\Mousekidney_561nm_1.49NA_65nm.tif'));
 image0 = 255*(image0 - min(min(min(image0))))./(max(max(max(image0)))-min(min(min(image0))));
+=======
+image0 = double(imstackread('./input/mito-(COMPLEX I)100_WT_apex_100x.tif'));
+image0 = 255*(image0 - min(min(image0)))./(max(max(image0))-min(min(image0)));
+>>>>>>> 28de6a128f6aad3230d15af4843f286617994191
 [Nx0,Ny0,~] = size(image0);
 [Nx,Ny,~] = size(image0);
 if Ny>Nx
