@@ -6,6 +6,7 @@ addpath("./helpfunctions");
 %data_folder = fullfile(getenv('HOME'), 'scratch/IHC/raw');      %you may change this
 data_folder = uigetdir();
 data_files = dir(fullfile(data_folder, '*.nd2'));
+skip_channels = {'CSU-Cy5'};            % skipping cy5 which does not need denoising
 for k = 1:length(data_files)
     data_path = fullfile(data_folder, data_files(k).name);
     fprintf('Processing file: %s\n', data_path);
@@ -16,6 +17,11 @@ for k = 1:length(data_files)
     processed = cell(num_channels, 1);
     thres_mat = [60,60,60,60];
     for c = 1:num_channels
+        if ismember(channel_names{c}, skip_channels)
+            fprintf('Skipping channel %d: %s\n', c, channel_names{c});
+            processed{c} = channel_images{c};
+            continue; % Skip this iteration
+        end
         fprintf('Processing channel %d: %s\n', c, channel_names{c});
         factor = 2;
         thres = thres_mat(c);
